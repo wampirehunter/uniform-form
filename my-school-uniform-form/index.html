@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Uniform Order Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .form-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .form-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: white;
+            color: #ff6b6b;
+            transform: scale(1.1);
+        }
+        
+        .step-line {
+            width: 60px;
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .form-body {
+            padding: 30px;
+        }
+        
+        .form-part {
+            display: none;
+        }
+        
+        .form-part.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-section h3::before {
+            content: "📋";
+            margin-right: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .uniform-items {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .uniform-item {
+            display: grid;
+            grid-template-columns: 2fr 60px 80px 100px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .uniform-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .uniform-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+        
+        .qty-input, .rate-input {
+            width: 100% !important;
+            text-align: center;
+            padding: 6px !important;
+            border-radius: 4px !important;
+            font-size: 0.85rem !important;
+        }
+        
+        .amount-display {
+            font-weight: 600;
+            color: #27ae60;
+            text-align: right;
+            padding: 6px;
+            background: #e8f5e8;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .total-section {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .total-row:last-child {
+            border-top: 2px solid #34495e;
+            padding-top: 10px;
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .prev-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .prev-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+            position: relative;
+        }
+
+        .modal-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-content .close-btn:hover {
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .modal-message {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #555;
+            white-space: pre-wrap;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn.confirm-btn {
+            background-color: #00b894;
+            color: white;
+        }
+        
+        .modal-btn.cancel-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .form-body {
+                padding: 20px;
+            }
+            
+            .uniform-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                text-align: center;
+            }
+            
+            .form-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>School Uniform Order Form</h1>
+            <div class="step-indicator">
+                <div class="step active" id="step1">1</div>
+                <div class="step-line"></div>
+                <div class="step" id="step2">2</div>
+            </div>
+        </div>
+        
+        <div class="form-body">
+            <form id="uniformForm">
+                <!-- PART 1: Basic Information & Measurements -->
+                <div class="form-part active" id="part1">
+                    <div class="form-section">
+                        <h3>Student Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="orderNo">Order No.</label>
+                                <input type="text" id="orderNo" name="orderNo" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiptNo">Receipt No.</label>
+                                <input type="text" id="receiptNo" name="receiptNo" placeholder="Enter receipt number">
+                            </div>
+                            <div class="form-group">
+                                <label for="orderDate">Date <span class="required">*</span></label>
+                                <input type="date" id="orderDate" name="orderDate" required>
+                            </div>
+                        </div>
+                    
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentName">Student Name <span class="required">*</span></label>
+                                <input type="text" id="studentName" name="studentName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="class">Class/Grade <span class="required">*</span></label>
+                                <input type="text" id="class" name="class" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="schoolName">School Name <span class="required">*</span></label>
+                                <select id="schoolName" name="schoolName" required>
+                                    <option value="">Select a school</option>
+                                    <option value="ABC Public School">ABC Public School</option>
+                                    <option value="Global International School">Global International School</option>
+                                    <option value="City High School">City High School</option>
+                                    <option value="Springfield Elementary">Springfield Elementary</option>
+                                    <option value="Valley View Academy">Valley View Academy</option>
+                                    <option value="Other">--- Other (Enter manually) ---</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Measurements</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender">
+                                    <option value="">Select</option>
+                                    <option value="BOY">Boy</option>
+                                    <option value="GIRL">Girl</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="chest">Chest (inches)</label>
+                                <input type="number" id="chest" name="chest" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="waist">Waist (inches)</label>
+                                <input type="number" id="waist" name="waist" step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="height">Height (inches)</label>
+                                <input type="number" id="height" name="height" step="0.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nav-buttons">
+                        <div></div>
+                        <button type="button" class="nav-btn next-btn" onclick="nextPart()">Next: Items & Payment →</button>
+                    </div>
+                </div>
+
+                <!-- PART 2: Uniform Items & Payment -->
+                <div class="form-part" id="part2">
+                    <div class="form-section">
+                        <h3>Uniform Items</h3>
+                        <div class="uniform-items">
+                            <div class="uniform-item" style="font-weight: bold; background: #34495e; color: white; border-radius: 4px;">
+                                <div>Item</div>
+                                <div>Qty</div>
+                                <div>Rate (₹)</div>
+                                <div>Amount (₹)</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Colour Set (Shirt/Pinafore/Frock/Half Pant)</div>
+                                <input type="number" class="qty-input" name="colourset_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="colourset_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="colourset_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Shirt/Blouse</div>
+                                <input type="number" class="qty-input" name="shirt_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="shirt_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="shirt_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Pinafore/Skirt/Frock</div>
+                                <input type="number" class="qty-input" name="pinafore_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="pinafore_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="pinafore_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Full/Half Pant</div>
+                                <input type="number" class="qty-input" name="pant_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="pant_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="pant_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Pull Over/Sweater</div>
+                                <input type="number" class="qty-input" name="pullover_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="pullover_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="pullover_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Sports T Shirt</div>
+                                <input type="number" class="qty-input" name="sportstshirt_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="sportstshirt_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="sportstshirt_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Sports Pant</div>
+                                <input type="number" class="qty-input" name="sportspant_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="sportspant_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="sportspant_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Socks (Regular)</div>
+                                <input type="number" class="qty-input" name="socks_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="socks_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="socks_amount">₹0</div>
+                            </div>
+                            
+                            <div class="uniform-item">
+                                <div class="item-name">Belt/Tie/Cap/Shoes</div>
+                                <input type="number" class="qty-input" name="accessories_qty" min="0" onchange="calculateAmount(this)">
+                                <input type="number" class="rate-input" name="accessories_rate" min="0" step="0.01" onchange="calculateAmount(this)">
+                                <div class="amount-display" id="accessories_amount">₹0</div>
+                            </div>
+                        </div>
+
+                        <!-- Totals -->
+                        <div class="total-section">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">₹0</span>
+                            </div>
+                            <div class="total-row">
+                                <span>CGST (9%):</span>
+                                <span id="cgst">₹0</span>
+                            </div>
+                            <div class="total-row">
+                                <span>SGST (9%):</span>
+                                <span id="sgst">₹0</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Total Amount:</span>
+                                <span id="totalAmount">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Payment Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="advance">Advance Payment (₹)</label>
+                                <input type="number" id="advance" name="advance" min="0" step="0.01" onchange="calculateBalance()">
+                            </div>
+                            <div class="form-group">
+                                <label for="balance">Balance (₹)</label>
+                                <input type="number" id="balance" name="balance" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nav-buttons">
+                        <button type="button" class="nav-btn prev-btn" onclick="prevPart()">← Back</button>
+                        <button type="submit" class="nav-btn submit-btn">Submit Order 📝</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Modal/Message Box -->
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalIcon" class="modal-icon"></div>
+            <div id="modalTitle" class="modal-title"></div>
+            <div id="modalMessage" class="modal-message"></div>
+            <div id="modalButtons" class="modal-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPart = 1;
+
+        // Get modal elements
+        const modal = document.getElementById('customModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButtons = document.getElementById('modalButtons');
+        const closeBtn = document.querySelector('.modal .close-btn');
+
+        let modalResolve;
+
+        // Function to show the custom message box
+        function showModal(icon, title, message, isConfirm = false) {
+            return new Promise(resolve => {
+                modalIcon.textContent = icon;
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                modalButtons.innerHTML = ''; // Clear existing buttons
+                
+                if (isConfirm) {
+                    modalButtons.innerHTML = `
+                        <button class="modal-btn confirm-btn">OK</button>
+                        <button class="modal-btn cancel-btn">Cancel</button>
+                    `;
+                } else {
+                    modalButtons.innerHTML = `<button class="modal-btn confirm-btn">OK</button>`;
+                }
+                
+                const confirmBtn = modalButtons.querySelector('.confirm-btn');
+                const cancelBtn = modalButtons.querySelector('.cancel-btn');
+
+                confirmBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(true);
+                };
+
+                if (cancelBtn) {
+                    cancelBtn.onclick = () => {
+                        modal.style.display = 'none';
+                        resolve(false);
+                    };
+                }
+
+                closeBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(false); // Default to false if user closes modal
+                };
+
+                modal.style.display = 'flex';
+                modalResolve = resolve;
+            });
+        }
+
+        // Generate order number on page load
+        document.getElementById('orderNo').value = 'ORD' + Date.now().toString().slice(-6);
+        document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+        
+        function nextPart() {
+            // Validate required fields in part 1
+            const requiredFields = ['studentName', 'class', 'schoolName', 'orderDate'];
+            let isValid = true;
+            
+            for (let field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element) {
+                    continue;
+                }
+
+                let value = '';
+                if (element.tagName === 'SELECT' || element.tagName === 'INPUT') {
+                    value = element.value.trim();
+                }
+                
+                if (!value || value === 'Other' || value === 'Select a school') {
+                    element.style.borderColor = '#e74c3c';
+                    isValid = false;
+                } else {
+                    element.style.borderColor = '#e9ecef';
+                }
+            }
+            
+            if (!isValid) {
+                showModal('⚠️', 'Missing Information', 'Please fill in all required fields marked with *');
+                return;
+            }
+            
+            document.getElementById('part1').classList.remove('active');
+            document.getElementById('part2').classList.add('active');
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+            currentPart = 2;
+        }
+
+        function prevPart() {
+            document.getElementById('part2').classList.remove('active');
+            document.getElementById('part1').classList.add('active');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+            currentPart = 1;
+        }
+
+        function calculateAmount(element) {
+            const row = element.closest('.uniform-item');
+            const qtyInput = row.querySelector('.qty-input');
+            const rateInput = row.querySelector('.rate-input');
+            const amountDisplay = row.querySelector('.amount-display');
+            
+            const qty = parseFloat(qtyInput.value) || 0;
+            const rate = parseFloat(rateInput.value) || 0;
+            const amount = qty * rate;
+            
+            amountDisplay.textContent = '₹' + amount.toFixed(0);
+            
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            const amountDisplays = document.querySelectorAll('.amount-display');
+            let subtotal = 0;
+            
+            amountDisplays.forEach(display => {
+                if (display.id) {
+                    const amount = parseFloat(display.textContent.replace('₹', '')) || 0;
+                    subtotal += amount;
+                }
+            });
+            
+            const cgst = subtotal * 0.09;
+            const sgst = subtotal * 0.09;
+            const total = subtotal + cgst + sgst;
+            
+            document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(0);
+            document.getElementById('cgst').textContent = '₹' + cgst.toFixed(0);
+            document.getElementById('sgst').textContent = '₹' + sgst.toFixed(0);
+            document.getElementById('totalAmount').textContent = '₹' + total.toFixed(0);
+            
+            calculateBalance();
+        }
+
+        function calculateBalance() {
+            const totalText = document.getElementById('totalAmount').textContent;
+            const total = parseFloat(totalText.replace('₹', '')) || 0;
+            const advance = parseFloat(document.getElementById('advance').value) || 0;
+            const balance = total - advance;
+            document.getElementById('balance').value = balance.toFixed(0);
+        }
+
+        // Form submission
+        document.getElementById('uniformForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '⏳ Submitting...';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+
+            const formData = new FormData(this);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            // Get total amounts from display fields
+            data['subtotal'] = parseFloat(document.getElementById('subtotal').textContent.replace('₹', ''));
+            data['cgst'] = parseFloat(document.getElementById('cgst').textContent.replace('₹', ''));
+            data['sgst'] = parseFloat(document.getElementById('sgst').textContent.replace('₹', ''));
+            data['totalAmount'] = parseFloat(document.getElementById('totalAmount').textContent.replace('₹', ''));
+            
+            try {
+                // Send data to the Netlify Function
+                const response = await fetch('/.netlify/functions/submitOrder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+            
+                const result = await response.json();
+                
+                if (result.success) {
+                    const message = `✅ ORDER SUBMITTED SUCCESSFULLY!\n\n` +
+                                   `📋 Order No: ${data.orderNo}\n` +
+                                   `🧾 Receipt No: ${data.receiptNo || 'Not provided'}\n` +
+                                   `💰 Total Amount: ₹${data.totalAmount.toFixed(0)}\n` +
+                                   `👤 Student: ${data.studentName}\n\n` +
+                                   `*Data stored in Firestore!*`;
+                    await showModal('✅', 'Success!', message);
+                } else {
+                    await showModal('❌', 'Submission Failed', `There was an error: ${result.message}`);
+                }
+            } catch (error) {
+                await showModal('❌', 'Submission Failed', `An unexpected error occurred: ${error.message}`);
+            }
+            
+            const userChoice = await showModal('🔄', 'Ready for a new order?', 'Would you like to reset the form for a new entry?', true);
+            if (userChoice) {
+                resetFormForNewEntry();
+            } else {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+            }
+        });
+        
+        async function resetFormForNewEntry() {
+            document.getElementById('uniformForm').reset();
+            document.getElementById('orderNo').value = 'ORD' + Date.now().toString().slice(-6);
+            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('receiptNo').value = '';
+            calculateTotals();
+            if (currentPart === 2) {
+                prevPart();
+            }
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.textContent = 'Submit Order 📝';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            setTimeout(() => {
+                document.getElementById('studentName').focus();
+            }, 500);
+            await showModal('🔄', 'Form Reset!', 'The form has been reset and is ready for a new order.');
+        }
+    </script>
+</body>
+</html>
